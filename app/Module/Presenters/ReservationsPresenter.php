@@ -4,7 +4,8 @@ namespace App\Ruzenka\Presenters;
 
 
 use App\Model\Entities\Reservation;
-use App\Model\ReservationsFacade;
+
+use App\Model\ReservationsRepository;
 use App\Model\UserFacade;
 use App\Ruzenka\Presenters\RequireLoggedUser;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,13 +19,17 @@ class ReservationsPresenter extends \Nette\Application\UI\Presenter
 
 
 
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(protected ReservationsRepository$reservationsRepository)
     {
     }
 
     public function renderReservations(): void
     {
-        $reservations = $this->em->getRepository(Reservation::class)->findAll();
+
+
+       // $reservations = $this->reservationsRepository->getAllReservations();
+        $reservations = $this->reservationsRepository->getAllReservations();
+        bdump($reservations);
 
         $this->template->reservations = $reservations;
 

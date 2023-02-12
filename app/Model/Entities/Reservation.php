@@ -16,6 +16,12 @@ class Reservation
     #[GeneratedValue]
     protected int $id;
 
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    public ?\DateTimeInterface $dateFrom;
+
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    public ?\DateTimeInterface $dateTo;
+
     #[Column(type: Types::STRING, nullable: true)]
     public ?string $agency;
 
@@ -60,6 +66,39 @@ class Reservation
         $this->id = $id;
     }
 
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateFrom(): ?\DateTimeInterface
+    {
+        return $this->dateFrom;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateFrom
+     */
+    public function setDateFrom(?\DateTimeInterface $dateFrom): void
+    {
+        $this->dateFrom = $dateFrom;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateTo(): ?\DateTimeInterface
+    {
+        return $this->dateTo;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateTo
+     */
+    public function setDateTo(?\DateTimeInterface $dateTo): void
+    {
+        $this->dateTo = $dateTo;
+    }
+    
     /**
      * @return string|null
      */
@@ -203,5 +242,4 @@ class Reservation
     {
         $this->emailDate = $emailDate;
     }
-
 }

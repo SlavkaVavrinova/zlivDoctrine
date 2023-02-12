@@ -13,25 +13,31 @@
                 </tr>
                 </thead>
                 <tbody>
-<tr n:foreach="$reservations as $reservation">
-    <th scope="row">{$reservation->Termin}</th>
-    <td>{$reservation->Jmeno|truncate:50}</td>
-
-    <td> <a n:href="Detail:detail $reservation->id" class="btn btn-primary bg-secondaryCss text-primaryCss">
-            Detail
-        </a>
-
-        </td>
-    </tr>
+                <tr n:foreach="$reservations as $reservation">
+                    {varType App\Model\Entities\Reservation $reservation}
+                    <th scope="col">
+                        {if $reservation->getDateFrom() !== null}{$reservation->getDateFrom()->format('j.n.Y')}
+                        {else} neuvedeno
+                        {/if} -
+                        {if $reservation->getDateTo() !== null}{$reservation->getDateTo()->format('j.n.Y')}
+                        {else} neuvedeno
+                        {/if}
+                    </th>
+                    <th scope="col">{$reservation->getName()|truncate:50}</th>
+                    <th scope="col"><a n:href="Detail:detail $reservation->getId()"
+                                class="btn btn-primary bg-secondaryCss text-primaryCss">
+                            Detail
+                        </a></th>
+                </tr>
                 </tbody>
             </table>
         </div>
-    <div class="text-center">
-        <a n:href="Detail:add">
-            <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">Přidat rezervaci</button>
-        </a></div>
+        <div class="text-center">
+            <a n:href="Detail:add">
+                <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">Přidat rezervaci</button>
+            </a></div>
 
-    </div>
+        </div>
     </main>
 {/block}
 

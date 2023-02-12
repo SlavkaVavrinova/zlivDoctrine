@@ -1,4 +1,5 @@
 {block content}
+    {varType App\Model\Entities\Reservation $selectedReservation}
 
 
     <main class="form-signin container ">
@@ -12,14 +13,53 @@
 <tbody>
 
     <tr>
-    <tr n:foreach="$selectedReservation as $reservationKey => $reservationValue">
-    <th scope="row">{$reservationKey}</th>
-    <td>{$reservationValue}</td>
+    <th scope="row">ID</th>
+    <td>{$selectedReservation->getId()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Termín</th>
+        <td>{if $selectedReservation->getDateFrom() !== null}{$selectedReservation->getDateFrom()->format('j.n.Y')}{else} neuvedeno{/if} - {if $selectedReservation->getDateTo() !== null}{$selectedReservation->getDateTo()->format('j.n.Y')}{else} neuvedeno{/if}</td>
 
-</tr>
 
+    </tr>
 
+    <tr>
+        <th scope="row">Jméno</th>
+        <td>{$selectedReservation->getName()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Agentura</th>
+        <td>{$selectedReservation->getAgency()}</td>
+    </tr>
 
+    <tr>
+        <th scope="row">Číslo zakázky</th>
+        <td>{$selectedReservation->getOrderID()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Telefon</th>
+        <td>{$selectedReservation->getPhone()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Email</th>
+        <td>{$selectedReservation->getEmail()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Datum posledního kontaktu</th>
+        <td>{if $selectedReservation->getEmailDate() !== null}{$selectedReservation->getEmailDate()->format('j.n.Y')}{/if}</td>
+    </tr>
+    <tr>
+        <th scope="row">Info</th>
+        <td>{$selectedReservation->getInfo()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Cena</th>
+        <td>{$selectedReservation->getPrice()}</td>
+    </tr>
+    <tr>
+        <th scope="row">Zaplaceno</th>
+        <td>{$selectedReservation->getPaid()}</td>
+    </tr>
 
 
 

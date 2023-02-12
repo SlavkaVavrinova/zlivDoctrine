@@ -5,22 +5,23 @@ namespace App\Forms\ReservationsForm;
 use App\Forms\ReservationsForm\ReservationsFormFactory;
 use App\Model\ReservationsFacade;
 use App\Forms\BaseForm;
+use App\Model\ReservationsRepository;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 
 class ReservationsForm extends BaseForm
 {
-    private ReservationsFacade $reservationsFacade;
+    private ReservationsRepository $reservationsRepository;
     private ReservationsFormFactory $reservationsFormFactory;
 
     /** @var callable[] */
     public $onSuccess = [];
 
-    public function __construct(ReservationsFacade $reservationsFacade, ReservationsFormFactory $reservationsFormFactory)
+    public function __construct(ReservationsRepository $reservationsRepository, ReservationsFormFactory $reservationsFormFactory)
     {
-        $this->reservationsFacade = $reservationsFacade;
+        $this->reservationsRepository = $reservationsRepository;
         $this->reservationsFormFactory = $reservationsFormFactory;
-
+//todo schovat id, termín jen zobrazit
         $this->addInteger('id', 'Id:');
         $this->addText('Termin', 'Termin:')
             ->setRequired()
@@ -39,14 +40,18 @@ class ReservationsForm extends BaseForm
         $this->addTextArea('emailDate', 'EmailDate:');
         $this->addTextArea('Telefon', 'Telefon:');
         $this->addTextArea('arrivalTime', 'ArrivalTime:');
-        $this->addSubmit('send', 'Uložit');
+        $this->addSubmit('send', 'Uložit změněné')->setHtmlAttribute('class', 'btn btn-danger');
         $this->addProtection();
+
+        if ($id !== null) {
+
+        }
         $this->onSuccess[] = $this->ReservationsFormSucceeded(...);
     }
 
     public function ReservationsFormSucceeded($form, RezervationsDbFormData $reservationsData)
     {
-        $this->reservationsFacade->updateReservation($reservationsData);
+        $this->reservationsRepository->updateReservation($reservationsData);
     }
 
 }

@@ -4,21 +4,21 @@ namespace App\Ruzenka\Presenters;
 
 use App\Forms\ReservationsForm\ReservationsForm;
 use App\Forms\ReservationsForm\ReservationsFormFactory;
-use App\Forms\ReservationsForm\RezervationsDbFormData;
-use App\Model\ReservationsFacade;
-use Nette\Application\UI\Form;
+use App\Model\ReservationsRepository;
+use DateTime;
+use Nette\Application\UI\Presenter;
 
-class DetailPresenter extends \Nette\Application\UI\Presenter
+class DetailPresenter extends Presenter
 {
     use RequireLoggedUser;
 
-    private ReservationsFacade $reservationsFacade;
-    private ReservationsFormFactory $reservationsFormFactory;
+//    private ReservationsFacade $reservationsFacade;
+//    private ReservationsFormFactory $reservationsFormFactory;
 
-    public function __construct(ReservationsFormFactory $reservationsFormFactory, ReservationsFacade $reservationsFacade)
+    public function __construct(private ReservationsFormFactory $reservationsFormFactory, private ReservationsRepository $reservationsRepository)
     {
-        $this->reservationsFormFactory = $reservationsFormFactory;
-        $this->reservationsFacade = $reservationsFacade;
+//        $this->reservationsFormFactory = $reservationsFormFactory;
+//        $this->reservationsFacade = $reservationsFacade;
     }
 
 
@@ -32,12 +32,10 @@ class DetailPresenter extends \Nette\Application\UI\Presenter
         return $form;
     }
 
-    
-
 
     public function renderDetail($id): void
     {
-        $selectedReservation = $this->reservationsFacade->getReservation($id);
+        $selectedReservation = $this->reservationsRepository->getReservation($id);
 
         if (!$selectedReservation) {
             $this->error();
@@ -48,26 +46,28 @@ class DetailPresenter extends \Nette\Application\UI\Presenter
     }
 
 
-    public function renderEdit(int $id):void
+    public function renderEdit(int $id): void
     {
+        $editedReservation = $this->reservationsRepository->getReservation($id);
+        $defaults['id'] = $id;
 
-        $form = $this->getComponent('reservationsForm');
-        $editedReservation = $this->reservationsFacade->getReservation($id);
-
-        if ($editedReservation) {
-            foreach ($editedReservation as $reservationKey => $reservationValue){
-                $form->setDefaults([
-                    $reservationKey => $reservationValue,
-                ]);
+        foreach ($editedReservation as $key => $data) {
+            if ($data instanceof DateTime) {
+                $defaults[$key] = $data->format('d.m.Y');
+            } else {
+                $defaults[$key] = $data;
             }
         }
 
+        $form = $this->getComponent('reservationsForm');
+        $form->setDefaults($defaults);
     }
 
-    public function handleDelete(int $id):void
+
+    public function handleDelete(int $id): void
     {
 
-        $this->reservationsFacade->delete($id);
+        $this->reservationsRepository->delete($id);
         $this->redirect('Reservations:Reservations');
     }
 
