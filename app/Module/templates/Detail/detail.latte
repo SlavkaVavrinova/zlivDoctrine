@@ -11,18 +11,14 @@
 
     <table class="table table-success  m-0 fs-6">
 <tbody>
-
-    <tr>
-    <th scope="row">ID</th>
-    <td>{$selectedReservation->getId()}</td>
-    </tr>
     <tr>
         <th scope="row">Termín</th>
         <td>{if $selectedReservation->getDateFrom() !== null}{$selectedReservation->getDateFrom()->format('j.n.Y')}{else} neuvedeno{/if} - {if $selectedReservation->getDateTo() !== null}{$selectedReservation->getDateTo()->format('j.n.Y')}{else} neuvedeno{/if}</td>
-
-
     </tr>
-
+    <tr>
+        <th scope="row">Status</th>
+        <td>{$selectedReservation->getStatus()}</td>
+    </tr>
     <tr>
         <th scope="row">Jméno</th>
         <td>{$selectedReservation->getName()}</td>

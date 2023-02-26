@@ -19,16 +19,23 @@ class ReservationsRepository extends BaseRepository
 	{
 	}
 
-//	public function addReservation(RezervationsDbFormData $data)
-//	{
-//
-//        $this->db->query('INSERT INTO `rezervationsDb`', (array) $data);
-//
-//	}
+	public function addReservation(Reservation $data)
+	{
+
+        $this->em->getRepository(Reservation::class);
+        $this->em->persist($data);
+        $this->em->flush();
+
+	}
 
 	public function getAllReservations()
 	{
-    	return $this->em->getRepository(Reservation::class)->findAll();
+        return $this->em->createQueryBuilder()
+            ->select('r')
+            ->from(Reservation::class, 'r')
+            ->orderBy('r.dateFrom')
+            ->getQuery()
+            ->getResult();
 	}
 
     public function getReservation(int $id)
@@ -36,24 +43,20 @@ class ReservationsRepository extends BaseRepository
         return $this->em->find(Reservation::class, $id);
     }
 
-    public function updateReservation(int $id, RezervationsDbFormData $data)
+    public function updateReservation(Reservation $reservation)
     {
-        if (empty($id)) {
-$reservation =$this->em->getRepository(Reservation::class);
-    $this->em->persist($data);
-            $this->em->flush();
-        } else {
-            $reservation = $this->em->getRepository(Reservation::class)->find($id);
-            if (!$reservation) {
-                throw new EntityNotFoundException('Reservation with ID ' . $id . ' not found');
-            }
-            foreach ($data as $key => $value) {
-                $reservation->$key = $value;
-            }
+        bdump("je to tu");
+        bdump($reservation);
+        if (!$reservation) {
+            throw new EntityNotFoundException('Reservation with ID ' . $reservation->getId() . ' not found');
+        }
+
+
+            $this->em->getRepository(Reservation::class);
+    $this->em->persist($reservation);
             $this->em->flush();
 
-            $this->redirect("this");
-        }
+
 
 
 

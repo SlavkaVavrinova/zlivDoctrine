@@ -25,14 +25,9 @@ class ReservationsPresenter extends \Nette\Application\UI\Presenter
 
     public function renderReservations(): void
     {
-
-
-       // $reservations = $this->reservationsRepository->getAllReservations();
         $reservations = $this->reservationsRepository->getAllReservations();
-        bdump($reservations);
 
         $this->template->reservations = $reservations;
-
        $this->template->loginUser = $this->getUser()->getId();
 
     }

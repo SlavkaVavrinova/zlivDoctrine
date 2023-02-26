@@ -11,7 +11,7 @@ use Nette\Application\UI\Presenter;
 class DetailPresenter extends Presenter
 {
     use RequireLoggedUser;
-
+public ?int $id = null;
 //    private ReservationsFacade $reservationsFacade;
 //    private ReservationsFormFactory $reservationsFormFactory;
 
@@ -24,11 +24,22 @@ class DetailPresenter extends Presenter
 
     protected function createComponentReservationsForm(): ReservationsForm
     {
-        $form = $this->reservationsFormFactory->create();
+        bdump($this->id);
+        $form = $this->reservationsFormFactory->create($this->id);
+        bdump($this->id);
+bdump("xxxxxxxxxxxxxxxxxxxxx");
         $form->onSuccess[] = function () {
-            $this->flashMessage('Rezervace uložena');
-            $this->redirect('Reservations:Reservations');
+            bdump($this->id);
+            if (!empty($this->id)) {
+                $this->flashMessage('Rezervace upravena');
+                $this->redirect('Detail:Detail');
+            } else {
+                $this->flashMessage('Rezervace uložena');
+                $this->redirect('Reservations:Reservations');
+            }
         };
+        bdump($form->onSuccess);
+
         return $form;
     }
 
@@ -48,12 +59,14 @@ class DetailPresenter extends Presenter
 
     public function renderEdit(int $id): void
     {
+        $this->id = $id;
+        $this->template->id = $id;
         $editedReservation = $this->reservationsRepository->getReservation($id);
         $defaults['id'] = $id;
 
         foreach ($editedReservation as $key => $data) {
             if ($data instanceof DateTime) {
-                $defaults[$key] = $data->format('d.m.Y');
+                $defaults[$key] = $data->format('Y-m-d');
             } else {
                 $defaults[$key] = $data;
             }

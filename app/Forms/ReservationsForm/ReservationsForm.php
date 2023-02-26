@@ -2,12 +2,17 @@
 
 namespace App\Forms\ReservationsForm;
 
+use App\Base\Controls\DateInput;
 use App\Forms\ReservationsForm\ReservationsFormFactory;
+use App\Model\Entities\Reservation;
+use App\Model\Enums\Status;
 use App\Model\ReservationsFacade;
 use App\Forms\BaseForm;
 use App\Model\ReservationsRepository;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Tester\Assert;
+use DateTimeInterface;
 
 class ReservationsForm extends BaseForm
 {
@@ -17,41 +22,102 @@ class ReservationsForm extends BaseForm
     /** @var callable[] */
     public $onSuccess = [];
 
-    public function __construct(ReservationsRepository $reservationsRepository, ReservationsFormFactory $reservationsFormFactory)
+
+    public function __construct(ReservationsRepository $reservationsRepository, ReservationsFormFactory $reservationsFormFactory, $id)
     {
         $this->reservationsRepository = $reservationsRepository;
         $this->reservationsFormFactory = $reservationsFormFactory;
-//todo schovat id, termín jen zobrazit
-        $this->addInteger('id', 'Id:');
-        $this->addText('Termin', 'Termin:')
-            ->setRequired()
-            ->addRule(Form::MAX_LENGTH, null, 255);
-        $this->addText('Stav', 'Stav:')
-            ->addRule(Form::MAX_LENGTH, null, 255);
-        $this->addText('Agentura', 'Agentura:')
-            ->addRule(Form::MAX_LENGTH, null, 255);
-        $this->addText('Jmeno', 'Jmeno:')
-            ->addRule(Form::MAX_LENGTH, null, 255);
-        $this->addTextArea('Info', 'Info:');
-        $this->addTextArea('Cena', 'Cena:');
-        $this->addTextArea('Zaplaceno', 'Zaplaceno:');
-        $this->addTextArea('orderID', 'OrderID:');
-        $this->addTextArea('Email', 'Email:');
-        $this->addTextArea('emailDate', 'EmailDate:');
-        $this->addTextArea('Telefon', 'Telefon:');
-        $this->addTextArea('arrivalTime', 'ArrivalTime:');
-        $this->addSubmit('send', 'Uložit změněné')->setHtmlAttribute('class', 'btn btn-danger');
-        $this->addProtection();
 
-        if ($id !== null) {
+        $this->addHidden("id", $id);
+
+        $this->addText('dateFrom', 'Date from:')
+            ->setNullable()
+            ->setHtmlType('date');
+
+        $this->addText('dateTo', 'Date to:')
+            ->setRequired()
+            ->setHtmlType('date');
+        $this->addText('name', 'Jmeno:')
+            ->addRule(Form::MAX_LENGTH, null, 255);
+        $statuses = [
+            Status::VOLNO => 'Volno',
+            Status::ZADOST => 'Žádost klienta',
+            Status::BLOKACE_MAJITEL=> 'Blokace majitelem',
+            Status::REZERVACE_ZALOHA_NEZAPLACENA => 'Rezervace záloha nezaplacena',
+            Status::REZERVACE_SE_ZALOHOU => 'Rezervace se zálohou',
+        ];
+        $this->addSelect('status', 'Status:', $statuses);
+        $this->addText('agency', 'Agentura:')
+            ->addRule(Form::MAX_LENGTH, null, 255);
+
+        $this->addTextArea('info', 'Info:');
+        $this->addText('price', 'Cena:');
+        $this->addText('payd', 'Zaplaceno:');
+        $this->addText('orderID', 'OrderID:');
+        $this->addText('email', 'Email:');
+        $this->addText('emailDate', 'EmailDate:')        ->setHtmlType('date')
+        ;
+
+        $this->addText('phone', 'Telefon:');
+        if (empty($id)) {
+            $this->addSubmit('send', 'Uložit novou rezervaci')->setHtmlAttribute('class', 'btn btn-danger');
+        } else{$this->addSubmit('send', 'Uložit změněné')->setHtmlAttribute('class', 'btn btn-danger');}
+
+        $this->addProtection();
+        $this->onSuccess[] = $this->ReservationsFormSucceededAdd(...);
+
+    }
+
+    public function ReservationsFormSucceededAdd($form, array $reservationsData)
+    {
+        bdump("ReservationsFormSucceededAdd");
+        bdump($reservationsData);
+
+        $dateFrom = $reservationsData['dateFrom'];
+        if ($dateFrom !== null) {
+            $dateFrom = \DateTime::createFromFormat('Y-m-d', $dateFrom);
+        }
+
+        $dateTo = $reservationsData['dateTo'];
+        if ($dateTo !== null) {
+            $dateTo= \DateTime::createFromFormat('Y-m-d', $dateTo);
+        }
+
+        $emailDate= $reservationsData['emailDate'];
+        if ($emailDate !== null) {
+            $emailDate= \DateTime::createFromFormat('Y-m-d', $emailDate);
 
         }
-        $this->onSuccess[] = $this->ReservationsFormSucceeded(...);
-    }
 
-    public function ReservationsFormSucceeded($form, RezervationsDbFormData $reservationsData)
-    {
-        $this->reservationsRepository->updateReservation($reservationsData);
-    }
+        $reservation = new Reservation();
 
+        $reservation->setDateFrom($dateFrom);
+        $reservation->setDateTo($dateTo);
+        $reservation->setName($reservationsData['name']);
+             $reservation->setStatus($reservationsData['status']);
+        $reservation->setAgency($reservationsData['agency']);
+
+        $reservation->setInfo($reservationsData['info']);
+        $reservation->setPrice($reservationsData['price']);
+        $reservation->setPaid($reservationsData['payd']);
+        $reservation->setOrderID($reservationsData['orderID']);
+        $reservation->setEmail($reservationsData['email']);
+        if (!empty($emailDate)) {
+            $reservation->setEmailDate($emailDate);
+        }
+
+        $reservation->setPhone($reservationsData['phone']);
+        if (!empty($reservationsData['id'])) {
+            $reservation->setId($reservationsData['id']);
+            $this->reservationsRepository->updateReservation($reservation);
+            $this->onSuccess = $reservation->getId();
+        } else {
+            $this->reservationsRepository->addReservation($reservation);
+        }
+
+        bdump($reservation);
+bdump($reservationsData['emailDate']);
+
+
+    }
 }

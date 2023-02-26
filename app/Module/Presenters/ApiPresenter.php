@@ -3,34 +3,47 @@
 namespace App\Presenters;
 
 
+use App\Model\ReservationsRepository;
 use Nette\Application\Responses\JsonResponse;
 use App\Model\ReservationsFacade;
 use Nette\Utils\Json;
 
 class ApiPresenter extends AbstractPresenter
 {
-    private ReservationsFacade $reservationsFacade;
+    private ReservationsRepository $reservationsRepository;
 
-    public function __construct(ReservationsFacade $reservationsFacade)
+    public function __construct(ReservationsRepository $reservationsRepository)
     {
-        $this->reservationsFacade = $reservationsFacade;
         parent::__construct();
+        $this->reservationsRepository = $reservationsRepository;
     }
 
     public function actionDefault()
     {
-        // adresa http://localhost/zliv/www/api/
-        $reservations = $this->reservationsFacade->getAllReservations();
+        // adresa http://localhost/zlivDoctrine/www/api/
+        $reservations = $this->reservationsRepository->getAllReservations();
         $data = [];
+        $dateFrom = null;
+        $dateTo = null;
         foreach ($reservations as $reservation) {
             $id = $reservation->id;
             $row = [];
             foreach ($reservation as $key => $value) {
-                if ($key !== 'id') {
+                if ($key === 'dateFrom') {
+                    $dateFrom = $value->format('d.m.Y');
+                }
+                if ($key === 'dateTo') {
+                    $dateTo = $value->format('d.m.Y');
+                }
+                if ($key === 'id') {
+                    $row[$key] = $value;
+                } if ($key === 'status') {
                     $row[$key] = $value;
                 }
             }
-            $data[$id] = $row;
+
+            $row['term'] = $dateFrom . " - " . $dateTo;
+            $data[$dateFrom] = $row;
         }
 
         $response = new JsonResponse($data);
@@ -51,7 +64,7 @@ class ApiPresenter extends AbstractPresenter
         if ($this->getHttpRequest()->getMethod() === "POST") {
             $dataCoPrisla = Json::decode($this->getHttpRequest()->getRawBody());
             
-            $this->reservationsFacade->addReservation($dataCoPrisla);
+            $this->reservationsRepository->addReservation($dataCoPrisla);
 // todo takto má vypadat json odeslaný jako json, raw, post i GET funguje. Jde poslat jen 1
 //
 //{

@@ -14,19 +14,23 @@ class Reservation
     #[Id]
     #[Column(type: Types::INTEGER, nullable: false)]
     #[GeneratedValue]
-    protected int $id;
+    public int $id;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    public ?\DateTimeInterface $dateFrom;
+    public ?\DateTime $dateFrom;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    public ?\DateTimeInterface $dateTo;
+    public ?\DateTime $dateTo;
+
+    #[Column(type: Types::STRING, nullable: true)]
+    public ?string $name;
+
+    #[Column(type: Types::INTEGER, nullable: true)]
+    public ?int $status;
 
     #[Column(type: Types::STRING, nullable: true)]
     public ?string $agency;
 
-    #[Column(type: Types::STRING, nullable: true)]
-    public ?string $name;
 
     #[Column(type: Types::TEXT, nullable: true)]
     public ?string $info;
@@ -47,7 +51,7 @@ class Reservation
     public ?string $email;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    public ?\DateTimeInterface $emailDate;
+    public ?\DateTime $emailDate;
 
 
     /**
@@ -242,4 +246,21 @@ class Reservation
     {
         $this->emailDate = $emailDate;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int|null $status
+     */
+    public function setStatus(?int $status): void
+    {
+        $this->status = $status;
+    }
+
 }
