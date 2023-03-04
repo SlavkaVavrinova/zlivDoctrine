@@ -21,14 +21,14 @@ class ReservationsForm extends BaseForm
 
     /** @var callable[] */
     public $onSuccess = [];
-
+    private $id;
 
     public function __construct(ReservationsRepository $reservationsRepository, ReservationsFormFactory $reservationsFormFactory, $id)
     {
         $this->reservationsRepository = $reservationsRepository;
         $this->reservationsFormFactory = $reservationsFormFactory;
-
-        $this->addHidden("id", $id);
+        $this->id = $id;
+        $this->addHidden("id");
 
         $this->addText('dateFrom', 'Date from:')
             ->setNullable()
@@ -52,7 +52,7 @@ class ReservationsForm extends BaseForm
 
         $this->addTextArea('info', 'Info:');
         $this->addText('price', 'Cena:');
-        $this->addText('payd', 'Zaplaceno:');
+        $this->addText('paid', 'Zaplaceno:');
         $this->addText('orderID', 'OrderID:');
         $this->addText('email', 'Email:');
         $this->addText('emailDate', 'EmailDate:')        ->setHtmlType('date')
@@ -65,14 +65,10 @@ class ReservationsForm extends BaseForm
 
         $this->addProtection();
         $this->onSuccess[] = $this->ReservationsFormSucceededAdd(...);
-
     }
 
     public function ReservationsFormSucceededAdd($form, array $reservationsData)
     {
-        bdump("ReservationsFormSucceededAdd");
-        bdump($reservationsData);
-
         $dateFrom = $reservationsData['dateFrom'];
         if ($dateFrom !== null) {
             $dateFrom = \DateTime::createFromFormat('Y-m-d', $dateFrom);
@@ -86,7 +82,6 @@ class ReservationsForm extends BaseForm
         $emailDate= $reservationsData['emailDate'];
         if ($emailDate !== null) {
             $emailDate= \DateTime::createFromFormat('Y-m-d', $emailDate);
-
         }
 
         $reservation = new Reservation();
@@ -99,7 +94,7 @@ class ReservationsForm extends BaseForm
 
         $reservation->setInfo($reservationsData['info']);
         $reservation->setPrice($reservationsData['price']);
-        $reservation->setPaid($reservationsData['payd']);
+        $reservation->setPaid($reservationsData['paid']);
         $reservation->setOrderID($reservationsData['orderID']);
         $reservation->setEmail($reservationsData['email']);
         if (!empty($emailDate)) {
@@ -107,6 +102,7 @@ class ReservationsForm extends BaseForm
         }
 
         $reservation->setPhone($reservationsData['phone']);
+
         if (!empty($reservationsData['id'])) {
             $reservation->setId($reservationsData['id']);
             $this->reservationsRepository->updateReservation($reservation);
@@ -114,9 +110,6 @@ class ReservationsForm extends BaseForm
         } else {
             $this->reservationsRepository->addReservation($reservation);
         }
-
-        bdump($reservation);
-bdump($reservationsData['emailDate']);
 
 
     }

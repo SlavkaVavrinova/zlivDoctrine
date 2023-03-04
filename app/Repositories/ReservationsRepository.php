@@ -5,27 +5,27 @@ declare(strict_types=1);
 namespace App\Model;
 
 use App\Base\Database\BaseRepository;
-use App\Forms\ReservationsForm\RezervationsDbFormData;
+use App\Email\EmailService;
 use App\Model\Entities\Reservation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use Nette\Database\Explorer;
 
 class ReservationsRepository extends BaseRepository
 {
 
 
-	public function __construct(private EntityManagerInterface $em)
+    private EmailService $emailService;
+
+    public function __construct(private EntityManagerInterface $em, EmailService $emailService)
 	{
-	}
+        $this->emailService = $emailService;
+    }
 
 	public function addReservation(Reservation $data)
 	{
-
         $this->em->getRepository(Reservation::class);
         $this->em->persist($data);
         $this->em->flush();
-
 	}
 
 	public function getAllReservations()
@@ -45,20 +45,29 @@ class ReservationsRepository extends BaseRepository
 
     public function updateReservation(Reservation $reservation)
     {
-        bdump("je to tu");
-        bdump($reservation);
-        if (!$reservation) {
+        $entity = $this->em->getRepository(Reservation::class)->find($reservation->getId());
+        if (!$entity) {
             throw new EntityNotFoundException('Reservation with ID ' . $reservation->getId() . ' not found');
         }
+        $entity->setAgency($reservation->agency);
+        $entity->setName($reservation->name);
+        $entity->setInfo($reservation->info);
+        $entity->setPrice($reservation->price);
+        $entity->setPaid($reservation->paid);
+        $entity->setOrderID($reservation->orderID);
+        $entity->setPhone($reservation->phone);
+        $entity->setEmail($reservation->email);
+        if (!empty($reservation->emailDate)) {
+            $entity->setEmailDate($reservation->emailDate);
+        }
+        $entity->setDateFrom($reservation->dateFrom);
+        $entity->setDateTo($reservation->dateTo);
+        $entity->setStatus($reservation->status);
 
+        $this->emailService->sendReservationEmail($entity);
 
-            $this->em->getRepository(Reservation::class);
-    $this->em->persist($reservation);
-            $this->em->flush();
-
-
-
-
+        $this->em->persist($entity);
+        $this->em->flush();
 
     }
 

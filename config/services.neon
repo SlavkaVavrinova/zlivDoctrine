@@ -5,6 +5,7 @@ search:
 			- *Factory
 			- *Facade
 			- *Repository
+			- *Service
 
 
 services:

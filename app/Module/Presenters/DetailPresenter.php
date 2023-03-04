@@ -11,25 +11,16 @@ use Nette\Application\UI\Presenter;
 class DetailPresenter extends Presenter
 {
     use RequireLoggedUser;
-public ?int $id = null;
-//    private ReservationsFacade $reservationsFacade;
-//    private ReservationsFormFactory $reservationsFormFactory;
+    public ?int $id = null;
 
     public function __construct(private ReservationsFormFactory $reservationsFormFactory, private ReservationsRepository $reservationsRepository)
     {
-//        $this->reservationsFormFactory = $reservationsFormFactory;
-//        $this->reservationsFacade = $reservationsFacade;
     }
-
 
     protected function createComponentReservationsForm(): ReservationsForm
     {
-        bdump($this->id);
         $form = $this->reservationsFormFactory->create($this->id);
-        bdump($this->id);
-bdump("xxxxxxxxxxxxxxxxxxxxx");
         $form->onSuccess[] = function () {
-            bdump($this->id);
             if (!empty($this->id)) {
                 $this->flashMessage('Rezervace upravena');
                 $this->redirect('Detail:Detail');
@@ -38,7 +29,6 @@ bdump("xxxxxxxxxxxxxxxxxxxxx");
                 $this->redirect('Reservations:Reservations');
             }
         };
-        bdump($form->onSuccess);
 
         return $form;
     }
@@ -72,7 +62,7 @@ bdump("xxxxxxxxxxxxxxxxxxxxx");
             }
         }
 
-        $form = $this->getComponent('reservationsForm');
+        $form = $this->getComponent('reservationsForm', $id);
         $form->setDefaults($defaults);
     }
 
