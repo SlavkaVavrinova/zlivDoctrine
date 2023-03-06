@@ -10,8 +10,17 @@ trait RequireLoggedUser
 	{
 		$this->onStartup[] = function () {
 			if (!$this->getUser()->isLoggedIn()) {
-				$this->redirect('Reservations:reservations');
+				$this->redirect('Login:login');
 			}
 		};
 	}
+
+    public function handleOut(): void
+    {
+        $this->getUser()->logout();
+        $this->flashMessage('Byl jste odhlášen');
+
+        $this->redirect('Login:login');
+
+    }
 }

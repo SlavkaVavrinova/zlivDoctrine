@@ -4,17 +4,20 @@ namespace App\Ruzenka\Presenters;
 
 use App\Forms\ReservationsForm\ReservationsForm;
 use App\Forms\ReservationsForm\ReservationsFormFactory;
-use App\Model\ReservationsRepository;
+use App\Model\ReservationsManager;
+use App\Model\UserFacade;
 use DateTime;
 use Nette\Application\UI\Presenter;
 
 class DetailPresenter extends Presenter
 {
     use RequireLoggedUser;
+    private UserFacade $userFacade;
     public ?int $id = null;
 
-    public function __construct(private ReservationsFormFactory $reservationsFormFactory, private ReservationsRepository $reservationsRepository)
+    public function __construct(private ReservationsFormFactory $reservationsFormFactory, private ReservationsManager $reservationsManager, UserFacade $userFacade)
     {
+        $this->userFacade = $userFacade;
     }
 
     protected function createComponentReservationsForm(): ReservationsForm
@@ -36,7 +39,7 @@ class DetailPresenter extends Presenter
 
     public function renderDetail($id): void
     {
-        $selectedReservation = $this->reservationsRepository->getReservation($id);
+        $selectedReservation = $this->reservationsManager->getReservation($id);
 
         if (!$selectedReservation) {
             $this->error();
@@ -44,6 +47,8 @@ class DetailPresenter extends Presenter
 
         $this->template->selectedReservation = $selectedReservation;
         $this->template->id = $id;
+        $user = $this->userFacade->getLogedUserRow($this->getUser()->getId());
+        $this->template->loginUserUsername = $user->getUsername();
     }
 
 
@@ -51,7 +56,7 @@ class DetailPresenter extends Presenter
     {
         $this->id = $id;
         $this->template->id = $id;
-        $editedReservation = $this->reservationsRepository->getReservation($id);
+        $editedReservation = $this->reservationsManager->getReservation($id);
         $defaults['id'] = $id;
 
         foreach ($editedReservation as $key => $data) {
@@ -69,8 +74,7 @@ class DetailPresenter extends Presenter
 
     public function handleDelete(int $id): void
     {
-
-        $this->reservationsRepository->delete($id);
+        $this->reservationsManager->delete($id);
         $this->redirect('Reservations:Reservations');
     }
 

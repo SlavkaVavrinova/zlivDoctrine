@@ -3,25 +3,29 @@
 namespace App\Presenters;
 
 
-use App\Model\ReservationsRepository;
+use App\Email\EmailService;
+use App\Model\ReservationsManager;
 use Nette\Application\Responses\JsonResponse;
 use App\Model\ReservationsFacade;
 use Nette\Utils\Json;
 
 class ApiPresenter extends AbstractPresenter
 {
-    private ReservationsRepository $reservationsRepository;
+    private ReservationsManager $reservationsManager;
+    private EmailService $emailService;
 
-    public function __construct(ReservationsRepository $reservationsRepository)
+
+    public function __construct(ReservationsManager $reservationsManager,  EmailService $emailService)
     {
         parent::__construct();
-        $this->reservationsRepository = $reservationsRepository;
+        $this->reservationsManager = $reservationsManager;
+        $this->emailService = $emailService;
     }
 
     public function actionDefault()
     {
         // adresa http://localhost/zlivDoctrine/www/api/
-        $reservations = $this->reservationsRepository->getAllReservations();
+        $reservations = $this->reservationsManager->getAllReservations();
         $data = [];
         $dateFrom = null;
         $dateTo = null;
@@ -63,10 +67,11 @@ class ApiPresenter extends AbstractPresenter
 // adresa http://localhost/zliv/www/api/request
         if ($this->getHttpRequest()->getMethod() === "POST") {
             $dataCoPrisla = Json::decode($this->getHttpRequest()->getRawBody());
-            
-            $this->reservationsRepository->addReservation($dataCoPrisla);
+
+            $this->emailService->sendReservationEmail($dataCoPrisla);
+
+            $this->reservationsManager->addReservation($dataCoPrisla);
 // todo takto má vypadat json odeslaný jako json, raw, post i GET funguje. Jde poslat jen 1
-//
 //{
 //   "id":1000,
 //   "Termin":"20.05.2024-27.05.2024",

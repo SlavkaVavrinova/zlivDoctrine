@@ -3,33 +3,30 @@
 namespace App\Ruzenka\Presenters;
 
 
-use App\Model\Entities\Reservation;
-
-use App\Model\ReservationsRepository;
+use App\Model\ReservationsManager;
 use App\Model\UserFacade;
 use App\Ruzenka\Presenters\RequireLoggedUser;
-use Doctrine\ORM\EntityManagerInterface;
-use Nette\Security\SimpleIdentity;
-
 
 
 class ReservationsPresenter extends \Nette\Application\UI\Presenter
 {
     use RequireLoggedUser;
 
+    private UserFacade $userFacade;
 
-
-    public function __construct(protected ReservationsRepository$reservationsRepository)
+    public function __construct(protected ReservationsManager $reservationsManager, UserFacade $userFacade)
     {
+        $this->userFacade = $userFacade;
     }
 
     public function renderReservations(): void
     {
-        $reservations = $this->reservationsRepository->getAllReservations();
+        $reservations = $this->reservationsManager->getAllReservations();
 
         $this->template->reservations = $reservations;
-       $this->template->loginUser = $this->getUser()->getId();
+
+        $user = $this->userFacade->getLogedUserRow($this->getUser()->getId());
+       $this->template->loginUserUsername = $user->getUsername();
 
     }
-
 }

@@ -3,7 +3,11 @@
 
     <main class="form-signin container">
         <div class="bg-primaryCss p-2">
-            <div class="d-flex justify-content-end"><h1 class="text-secondaryCss">{$loginUser}</h1></div>
+            <div class="d-flex justify-content-end">
+                <p class="text-secondaryCss">Přihlášený uživatel: {$loginUserUsername} <a n:href="out!">Odhlásit</a>
+                </p>
+            </div>
+
             <table class="table table-success m-0 fs-6">
                 <thead>
                 <tr>
@@ -32,12 +36,15 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-center">
-            <a n:href="Detail:add">
-                <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">Přidat rezervaci</button>
-            </a></div>
+        {if $loginUserUsername === "slavka"}
+            <div class="text-center">
+                <a n:href="Detail:add">
+                    <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">Přidat rezervaci</button>
+                </a></div>
 
-        </div>
+            </div>
+        {/if}
+        }
     </main>
 {/block}
 

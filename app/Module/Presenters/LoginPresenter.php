@@ -11,7 +11,6 @@ use Nette\Security\AuthenticationException;
 
 final class LoginPresenter extends Nette\Application\UI\Presenter
 {
-
     private UsersFormFactory $usersFormFactory;
 
     public function __construct(UsersFormFactory $usersFormFactory)
@@ -46,12 +45,5 @@ final class LoginPresenter extends Nette\Application\UI\Presenter
             return;
         }
         $this->redirect('Reservations:reservations');
-    }
-
-    public function actionOut(): void
-    {
-        $this->getUser()->logout();
-        $this->flashMessage('Byl jste odhlášen');
-        $this->redirect(':Login:login');
     }
 }

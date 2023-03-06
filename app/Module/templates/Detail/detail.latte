@@ -7,74 +7,74 @@
 
             <h1>Detail Rezervace</h1>
 
-    <div class="bg-primaryCss p-2">
+            <div class="bg-primaryCss p-2">
+                <div class="d-flex justify-content-end">
+                    <p class="text-secondaryCss">Přihlášený uživatel: {$loginUserUsername}
+                        <a n:href="out!">Odhlásit</a>
+                    </p>
+                </div>
+                <table class="table table-success  m-0 fs-6">
+                    <tbody>
+                    <tr>
+                        <th scope="row">Termín</th>
+                        <td>{if $selectedReservation->getDateFrom() !== null}{$selectedReservation->getDateFrom()->format('j.n.Y')}{else} neuvedeno{/if} - {if $selectedReservation->getDateTo() !== null}{$selectedReservation->getDateTo()->format('j.n.Y')}{else} neuvedeno{/if}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>{$selectedReservation->getStatus()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Jméno</th>
+                        <td>{$selectedReservation->getName()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Agentura</th>
+                        <td>{$selectedReservation->getAgency()}</td>
+                    </tr>
 
-    <table class="table table-success  m-0 fs-6">
-<tbody>
-    <tr>
-        <th scope="row">Termín</th>
-        <td>{if $selectedReservation->getDateFrom() !== null}{$selectedReservation->getDateFrom()->format('j.n.Y')}{else} neuvedeno{/if} - {if $selectedReservation->getDateTo() !== null}{$selectedReservation->getDateTo()->format('j.n.Y')}{else} neuvedeno{/if}</td>
-    </tr>
-    <tr>
-        <th scope="row">Status</th>
-        <td>{$selectedReservation->getStatus()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Jméno</th>
-        <td>{$selectedReservation->getName()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Agentura</th>
-        <td>{$selectedReservation->getAgency()}</td>
-    </tr>
-
-    <tr>
-        <th scope="row">Číslo zakázky</th>
-        <td>{$selectedReservation->getOrderID()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Telefon</th>
-        <td>{$selectedReservation->getPhone()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Email</th>
-        <td>{$selectedReservation->getEmail()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Datum posledního kontaktu</th>
-        <td>{if $selectedReservation->getEmailDate() !== null}{$selectedReservation->getEmailDate()->format('j.n.Y')}{/if}</td>
-    </tr>
-    <tr>
-        <th scope="row">Info</th>
-        <td>{$selectedReservation->getInfo()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Cena</th>
-        <td>{$selectedReservation->getPrice()}</td>
-    </tr>
-    <tr>
-        <th scope="row">Zaplaceno</th>
-        <td>{$selectedReservation->getPaid()}</td>
-    </tr>
-
-
-
-
-    </tbody>
-    </table>
-    <div class="text-center">
-        <a n:href="Detail:edit, $id" class="btn btn-primary bg-secondaryCss text-primaryCss">Upravit</a>
-        <a n:href="delete!, $id" class="btn btn-danger">Smazat</a>
-
-    </div>
-{*    {control reservationsForm}*}
-    <div class="text-center">
-        <a n:href="Reservations:reservations">
-            <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">← zpět na rezervace</button>
-        </a>
-    </div>
+                    <tr>
+                        <th scope="row">Číslo zakázky</th>
+                        <td>{$selectedReservation->getOrderID()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Telefon</th>
+                        <td>{$selectedReservation->getPhone()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>{$selectedReservation->getEmail()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Datum posledního kontaktu</th>
+                        <td>{if $selectedReservation->getEmailDate() !== null}{$selectedReservation->getEmailDate()->format('j.n.Y')}{/if}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Info</th>
+                        <td>{$selectedReservation->getInfo()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Cena</th>
+                        <td>{$selectedReservation->getPrice()}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Zaplaceno</th>
+                        <td>{$selectedReservation->getPaid()}</td>
+                    </tr>
 
 
-
-</main>
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <a n:href="Detail:edit, $id" class="btn btn-primary bg-secondaryCss text-primaryCss">Upravit</a>
+                    {if $loginUserUsername === "slavka"}
+                        <a n:href="delete!, $id" class="btn btn-danger">Smazat</a>
+                    {/if}
+                </div>
+                <div class="text-center">
+                    <a n:href="Reservations:reservations">
+                        <button class="btn btn-primary bg-secondaryCss  mt-2 text-primaryCss ">← zpět na rezervace
+                        </button>
+                    </a>
+                </div>
+    </main>
 {/block}

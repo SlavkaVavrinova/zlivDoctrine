@@ -6,7 +6,7 @@ search:
 			- *Facade
 			- *Repository
 			- *Service
-
+			- *Manager
 
 services:
 	- App\Router\RouterFactory::createRouter

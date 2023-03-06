@@ -48,7 +48,6 @@ final class UserFacade implements Nette\Security\Authenticator
 		$row = $this->em->getRepository(User::class)
 			->findOneBy([self::ColumnName => $username])
 			;
-        bdump($row);
 
 		if (!$row) {
 			throw new Nette\Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
@@ -89,10 +88,11 @@ final class UserFacade implements Nette\Security\Authenticator
 			throw new DuplicateNameException;
 		}
 	}
+
+    public function getLogedUserRow(int $id)
+    {
+        return $this->em->find(User::class, $id);
+    }
 }
 
 
-
-class DuplicateNameException extends \Exception
-{
-}

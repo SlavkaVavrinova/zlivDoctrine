@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace App\Model;
 
 use App\Base\Database\BaseRepository;
-use App\Email\EmailService;
 use App\Model\Entities\Reservation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
-class ReservationsRepository extends BaseRepository
+class ReservationsManager extends BaseRepository
 {
-
-
-    private EmailService $emailService;
-
-    public function __construct(private EntityManagerInterface $em, EmailService $emailService)
+    public function __construct(private EntityManagerInterface $em)
 	{
-        $this->emailService = $emailService;
     }
 
 	public function addReservation(Reservation $data)
@@ -63,22 +57,15 @@ class ReservationsRepository extends BaseRepository
         $entity->setDateFrom($reservation->dateFrom);
         $entity->setDateTo($reservation->dateTo);
         $entity->setStatus($reservation->status);
-
-        $this->emailService->sendReservationEmail($entity);
-
+        bdump($entity);
         $this->em->persist($entity);
         $this->em->flush();
-
     }
-
-
 
     public function delete(int $id)
 	{
         $reservationToDelete = $this->em->getRepository(Reservation::class)->find($id);
         $this->em->remove($reservationToDelete);
         $this->em->flush();
-
-
     }
 }

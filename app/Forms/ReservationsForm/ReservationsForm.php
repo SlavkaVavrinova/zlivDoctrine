@@ -8,7 +8,7 @@ use App\Model\Entities\Reservation;
 use App\Model\Enums\Status;
 use App\Model\ReservationsFacade;
 use App\Forms\BaseForm;
-use App\Model\ReservationsRepository;
+use App\Model\ReservationsManager;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Tester\Assert;
@@ -16,16 +16,16 @@ use DateTimeInterface;
 
 class ReservationsForm extends BaseForm
 {
-    private ReservationsRepository $reservationsRepository;
+    private ReservationsManager $reservationsManager;
     private ReservationsFormFactory $reservationsFormFactory;
 
     /** @var callable[] */
     public $onSuccess = [];
     private $id;
 
-    public function __construct(ReservationsRepository $reservationsRepository, ReservationsFormFactory $reservationsFormFactory, $id)
+    public function __construct(ReservationsManager $reservationsManager, ReservationsFormFactory $reservationsFormFactory, $id)
     {
-        $this->reservationsRepository = $reservationsRepository;
+        $this->reservationsManager = $reservationsManager;
         $this->reservationsFormFactory = $reservationsFormFactory;
         $this->id = $id;
         $this->addHidden("id");
@@ -105,12 +105,10 @@ class ReservationsForm extends BaseForm
 
         if (!empty($reservationsData['id'])) {
             $reservation->setId($reservationsData['id']);
-            $this->reservationsRepository->updateReservation($reservation);
+            $this->reservationsManager->updateReservation($reservation);
             $this->onSuccess = $reservation->getId();
         } else {
-            $this->reservationsRepository->addReservation($reservation);
+            $this->reservationsManager->addReservation($reservation);
         }
-
-
     }
 }
