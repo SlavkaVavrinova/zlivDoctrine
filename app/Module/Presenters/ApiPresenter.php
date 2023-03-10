@@ -47,7 +47,7 @@ class ApiPresenter extends AbstractPresenter
             }
 
             $row['term'] = $dateFrom . " - " . $dateTo;
-            $data[$dateFrom] = $row;
+            $data[] = $row;
         }
 
         $response = new JsonResponse($data);
@@ -67,10 +67,12 @@ class ApiPresenter extends AbstractPresenter
 // adresa http://localhost/zliv/www/api/request
         if ($this->getHttpRequest()->getMethod() === "POST") {
             $dataCoPrisla = Json::decode($this->getHttpRequest()->getRawBody());
-
+bdump($dataCoPrisla);
+            $today = new DateTime();
+            $dataCoPrisla['emailDate'] = $today->format('Y-m-d');
             $this->emailService->sendReservationEmail($dataCoPrisla);
 
-            $this->reservationsManager->addReservation($dataCoPrisla);
+            $this->reservationsManager->updateReservationApi($dataCoPrisla);
 // todo takto má vypadat json odeslaný jako json, raw, post i GET funguje. Jde poslat jen 1
 //{
 //   "id":1000,

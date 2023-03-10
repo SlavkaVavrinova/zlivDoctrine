@@ -6,6 +6,7 @@ namespace App\Model;
 
 use App\Base\Database\BaseRepository;
 use App\Model\Entities\Reservation;
+use App\Model\Enums\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
@@ -60,6 +61,32 @@ class ReservationsManager extends BaseRepository
         bdump($entity);
         $this->em->persist($entity);
         $this->em->flush();
+    }
+
+    public function updateReservationApi(array $reservationApi)
+    {
+
+        /** @var Reservation $entity */
+        $entity = $this->em->getRepository(Reservation::class)->find($reservationApi['id']);
+        if (!$entity) {
+            // poslat email s údaji
+        } else {
+
+            $entity->setName($reservationApi['name']);
+            $entity->setInfo($reservationApi['info']);
+
+            $entity->setPhone($reservationApi['phone']);
+            $entity->setEmail($reservationApi['email']);
+
+            $entity->setEmailDate($reservationApi['emailDate']);
+
+
+            $entity->setStatus(Status::ZADOST);
+
+            $this->em->persist($entity);
+            $this->em->flush();
+        }
+
     }
 
     public function delete(int $id)

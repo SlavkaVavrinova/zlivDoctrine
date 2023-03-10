@@ -55,8 +55,8 @@ class ReservationsForm extends BaseForm
         $this->addText('paid', 'Zaplaceno:');
         $this->addText('orderID', 'OrderID:');
         $this->addText('email', 'Email:');
-        $this->addText('emailDate', 'EmailDate:')        ->setHtmlType('date')
-        ;
+        $this->addText('emailDate', 'EmailDate:')
+            ->setHtmlType('date');
 
         $this->addText('phone', 'Telefon:');
         if (empty($id)) {
